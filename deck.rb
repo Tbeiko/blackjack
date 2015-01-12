@@ -1,5 +1,28 @@
-# Trying to create a new deck for each BJ game. 
+# Working with the deck in a separate file.
+A = 1
+J = 10
+Q = 10
+K = 10
 
+# Building the deck as an array (VS a hash)
+# Proposed by TA 
+# suits = ['HEARTS', 'DIAMONDS', 'SPADE', 'CLOVES']
+# cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+# # My adaptation
+# cards_value = [A,2,3,4,5,6,7,8,9,10,J,Q,K]
+# deck = suits.product(cards)
+# deck.shuffle!
+
+# p deck 
+
+# value_deck = suits.product(cards_value)
+# value_deck.shuffle!
+
+# p value_deck[0]
+# p value_deck[0][0]
+# p value_deck[0][1]
+
+# # My first version of building the deck 
 DECK = {"ace of hearts"   =>  1, "ace of spades"   =>  1, "ace of squares"   =>  1, "ace of cloves"   =>  1,
         "two of hearts"   =>  2, "two of spades"   =>  2, "two of squares"   =>  2, "two of cloves"   =>  2,
         "three of hearts" =>  3, "three of spades" =>  3, "three of squares" =>  3, "three of cloves" =>  3,
@@ -14,25 +37,38 @@ DECK = {"ace of hearts"   =>  1, "ace of spades"   =>  1, "ace of squares"   => 
         "queen of hearts" => 10, "queen of spades" => 10, "queen of squares" => 10, "queen of cloves" => 10,
         "king of hearts"  => 10, "king of spades"  => 10, "king of squares"  => 10, "king of cloves"  => 10}
 
-@deck_for_game = {}
 
-def generate_deck(some_deck)
-  some_deck = DECK
-end
+# def hand_a_card(deck, player_hand)
+#   card = deck.to_a.sample.to_h
+#   player_hand[card.key] = card.value
+# end
 
-p generate_deck(@deck_for_game)
-p @deck_for_game
+# user_hand = {}
 
-def generate_deck_v2(some)
-  some_deck = DECK.clone
-end
+# hand_a_card(DECK,user_hand)
+# p user_hand
 
-p generate_deck_v2(@deck_for_game)
-p @deck_for_game
 
-def generate_deck_v3(some_deck)
-  some_deck = Marshal.load(Marshal.dump(DECK))
-end
+# Trying to generate a new deck for each game.
+# @deck_for_game = {}
 
-p generate_deck_v3(@deck_for_game)
-p @deck_for_game
+# def generate_deck(some_deck)
+#   some_deck = DECK
+# end
+
+# p generate_deck(@deck_for_game)
+# p @deck_for_game
+
+# def generate_deck_v2(some)
+#   some_deck = DECK.clone
+# end
+
+# p generate_deck_v2(@deck_for_game)
+# p @deck_for_game
+
+# def generate_deck_v3(some_deck)
+#   some_deck = Marshal.load(Marshal.dump(DECK))
+# end
+
+# p generate_deck_v3(@deck_for_game)
+# p @deck_for_game

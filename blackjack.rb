@@ -25,25 +25,25 @@ def describe_player_hand(player_hand)
     puts
 end
 
-def calculate_hand_total(player_hand)
-  hand_total = 0
+def calculate_hand_total(player_hand, player_total)
   player_hand.each do |card|
     if card[1] == ACE
-      hand_total += 1
+      player_total += 1
     elsif (card[1] == JACK) || (card[1] == QUEEN) || (card[1] == KING)
-    hand_total += 10
+      player_total += 10
     else
-      hand_total += card[1]
+      player_total += card[1]
     end
   end
-  hand_total
-end
 
-def assert_if_blackjack_or_bust(player_hand)
-  if calculate_hand_total(player_hand) == 21
+  player_total
+end 
+
+def assert_if_blackjack_or_bust(player_hand, player_total)
+  if calculate_hand_total(player_hand, player_total) == 21
     say "BLACKJACK!"
     @game_still_on = false
-  elsif calculate_hand_total(player_hand) > 21
+  elsif calculate_hand_total(player_hand, player_total) > 21
     say "BUST!"
     @game_still_on = false
   else 
@@ -51,6 +51,13 @@ def assert_if_blackjack_or_bust(player_hand)
   end
 end
 
+def dealer_winning?(player_hand, player_total, dealer_hand, dealer_total)
+  if (calculate_hand_total(player_hand, player_total)) < (calculate_hand_total(dealer_hand,dealer_total))
+    true
+  else
+    false
+  end
+end
 
 puts
 say "Good evening sir, welcome to the blackjack table at Tim's Casino."
@@ -77,19 +84,22 @@ begin
 
   # Hand the player two cards
   user_hand = []
+  user_total = 0 
   2.times {hand_card_to_player(user_hand, game_deck)}
   # Tell the player his hand
   say "Your cards are:"
   describe_player_hand(user_hand)
   sleep 0.5
 
-  calculate_hand_total(user_hand)
-  assert_if_blackjack_or_bust(user_hand)
+  calculate_hand_total(user_hand, user_total)
+  assert_if_blackjack_or_bust(user_hand, user_total)
 
-  
+  # Only way this won't run is if blackjack on opening.
   if @game_still_on
     # Hand the dealer one card 
     dealer_hand = []
+    dealer_total = 0
+
     hand_card_to_player(dealer_hand, game_deck)
     # tell the player the dealers hand 
     say "The dealer's first card is:"
@@ -97,8 +107,9 @@ begin
     sleep 0.5
   end
 
+  # Ask the player if he wants to hit or pass.
+  # This will run until Bust/Blackjack or the player stops it.
   while want_to_hit && @game_still_on
-
     begin
       say "Do you want another card, #{USER_NAME} ? (yes/no)"
       wants_another_card = gets.chomp.downcase
@@ -114,41 +125,77 @@ begin
       end
       say "Your cards are:"
       describe_player_hand(user_hand)
-      calculate_hand_total(user_hand)
-      assert_if_blackjack_or_bust(user_hand)
+      calculate_hand_total(user_hand, user_total)
+      assert_if_blackjack_or_bust(user_hand, user_total)
     end until (wants_another_card == 'yes') || (wants_another_card == 'no')
-
   end 
 
-  # if game_still_on
+  # If the player hasn't busted or blackjacked, the dealer must hit until having at least 17.
+  if @game_still_on
+    while (calculate_hand_total(dealer_hand, dealer_total)<17)
+      puts "Another card is handed to the dealer"
+      hand_card_to_player(dealer_hand, game_deck)
+      sleep 1
+      say "The dealer's cards are:"
+      describe_player_hand(dealer_hand)
+      sleep 1
+      calculate_hand_total(dealer_hand, dealer_total)
+      assert_if_blackjack_or_bust(dealer_hand, dealer_total)
+      if @game_still_on == false
+        puts "You win the hand!"
+      end
+    end 
+  end 
 
-  #     begin 
-  #     tell the player the dealers hand 
-  #     calculate the dealers card value 
-  #       if value > 21
-  #         Dealer loses -> "BUST!" 
-  #         Player wins
-  #       elsif value == 21 
-  #         Dealer wins  -> "BLACKJACK!"
-  #       elsif value < 17
-  #         hand the dealer another card 
-  #       elsif value >= 17 
-  #         if dealer_total > player_total 
-  #           dealer wins
-  #         elsif player_total > dealer_total
-  #           hand the dealer another card 
-  #         end
-  #       end
-  #     end until blackjack || bust 
+  # If both players have the same hand, it's a tie. This can only happen when the dealer's total is >= 17
+  if calculate_hand_total(dealer_hand, dealer_total) == calculate_hand_total(user_hand, user_total)
+    say "It's a tie."
+    @game_still_on = false
+  end
+
+  # If the dealer total is > 17 and he has a larger total than the user, the dealer wins.
+  if (@game_still_on) && (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total))
+    say "The dealer beat you."
+    @game_still_on = false 
+  end
+
+  # If the dealer total is > 17 and he has a lower total than the user, he will continue until either he wins or busts.
+  if (@game_still_on) && (!dealer_winning?(user_hand, user_total, dealer_hand, dealer_total))
+  
+    say "Things are getting serious."
+    sleep 0.25
+
+    begin 
+
+      puts "Another card is handed to the dealer"
+      hand_card_to_player(dealer_hand, game_deck)
+      sleep 1
+      say "The dealer's cards are:"
+      describe_player_hand(dealer_hand)
+      sleep 1
+      calculate_hand_total(dealer_hand, dealer_total)
+      assert_if_blackjack_or_bust(dealer_hand, dealer_total)
+      if @game_still_on == false
+        puts "You win the hand!"
+      end
+
+    end until !@game_still_on || (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total))
+
+  if (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total))
+    puts "The dealer won the hand."
+  end
+
+  end
 
 
-say "Another hand, #{USER_NAME}? (yes/no)"
-if gets.chomp.downcase == "yes"
-  want_to_play == true
-else
-  want_to_play == false
-  break
-end
+  say "Another hand, #{USER_NAME}? (yes/no)"
+  wants_to_play_again = gets.chomp.downcase
+  if (wants_to_play_again == "yes") || (wants_to_play_again == "y")
+    want_to_play == true
+  else
+    want_to_play == false
+    break
+  end
 
 end until want_to_play == false
 

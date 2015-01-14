@@ -190,14 +190,19 @@ begin
 
     end until !@game_still_on || (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total))
 
+  # If the dealer's total is higher than the player and that he hasn't busted or blackajacked
   if (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total)) && @game_still_on 
     puts "The dealer won the hand."
     @game_still_on = false
   end
 
+  # If the dealer hits blackjack 
+  if (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total)) && @blackjack
+    puts "The dealer won the hand."
+    @game_still_on = false
   end
 
-
+  # Ask the player if he wants to play again
   say "Another hand, #{USER_NAME}? (yes/no)"
   wants_to_play_again = gets.chomp.downcase
   if (wants_to_play_again == "yes") || (wants_to_play_again == "y")

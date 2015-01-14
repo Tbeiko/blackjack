@@ -1,6 +1,4 @@
 # Blackjack.rb
-# Still need to figure out the way to appropriately calculate the ACE's value
-# Still need to build the dealer's playing model  
 
 # Constants
 ACE   = "ACE"
@@ -139,6 +137,10 @@ begin
     end until (wants_another_card == 'yes') || (wants_another_card == 'no')
   end 
 
+  puts "Your total is:"
+  say calculate_hand_total(user_hand, user_total)
+  sleep 0.5
+
   # If the player hasn't busted or blackjacked, the dealer must hit until having at least 17.
   if @game_still_on
     while (calculate_hand_total(dealer_hand, dealer_total)<17)
@@ -157,9 +159,11 @@ begin
   end 
 
   # If both players have the same hand, it's a tie. This can only happen when the dealer's total is >= 17
-  if calculate_hand_total(dealer_hand, dealer_total) == calculate_hand_total(user_hand, user_total)
-    say "It's a tie."
-    @game_still_on = false
+  unless @blackjack
+    if calculate_hand_total(dealer_hand, dealer_total) == calculate_hand_total(user_hand, user_total)
+      say "It's a tie."
+      @game_still_on = false
+    end
   end
 
   # If the dealer total is > 17 and he has a larger total than the user, the dealer wins.
@@ -190,19 +194,16 @@ begin
 
     end until !@game_still_on || (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total))
 
-  # If the dealer's total is higher than the player and that he hasn't busted or blackajacked
   if (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total)) && @game_still_on 
     puts "The dealer won the hand."
     @game_still_on = false
   end
 
-  # If the dealer hits blackjack 
-  if (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total)) && @blackjack
-    puts "The dealer won the hand."
-    @game_still_on = false
   end
 
-  # Ask the player if he wants to play again
+  puts "The dealer's total is:"
+  say calculate_hand_total(dealer_hand, dealer_total)
+
   say "Another hand, #{USER_NAME}? (yes/no)"
   wants_to_play_again = gets.chomp.downcase
   if (wants_to_play_again == "yes") || (wants_to_play_again == "y")

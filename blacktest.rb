@@ -94,7 +94,7 @@ begin
 
   # Hand the player two cards
   user_hand = []
-  @user_total = calculate_hand_total(user_hand)
+  user_total = calculate_hand_total(user_hand)
   2.times {hand_card_to_player(user_hand, game_deck)}
   # Tell the player his hand
   say "Your cards are:"
@@ -102,8 +102,9 @@ begin
   sleep 0.5
 
   p calculate_hand_total(user_hand)
-  p @user_total
+  p user_total
   assert_if_blackjack_or_bust(user_hand, user_total)
+  exit
 
   # Only way this won't run is if blackjack on opening.
   if @game_still_on

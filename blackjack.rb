@@ -35,7 +35,7 @@ def calculate_hand_total(player_hand, player_total)
     end
   end
 
-  player_hand.select{|c| c[1] == ACE}.count.times do
+  player_hand.select{|card| card[1] == ACE}.count.times do
     player_total -= 10 if player_total > 21
   end
 
@@ -56,11 +56,7 @@ def assert_if_blackjack_or_bust(player_hand, player_total)
 end
 
 def dealer_winning?(player_hand, player_total, dealer_hand, dealer_total)
-  if (calculate_hand_total(player_hand, player_total)) < (calculate_hand_total(dealer_hand,dealer_total))
-    true
-  else
-    false
-  end
+  calculate_hand_total(player_hand, player_total) < calculate_hand_total(dealer_hand,dealer_total)
 end
 
 puts
@@ -97,7 +93,6 @@ begin
   say "Your cards are:"
   describe_player_hand(user_hand)
   sleep 0.5
-
   calculate_hand_total(user_hand, user_total)
   assert_if_blackjack_or_bust(user_hand, user_total)
 
@@ -143,7 +138,7 @@ begin
 
   # If the player hasn't busted or blackjacked, the dealer must hit until having at least 17.
   if @game_still_on
-    while (calculate_hand_total(dealer_hand, dealer_total)<17)
+    while calculate_hand_total(dealer_hand, dealer_total)<17
       puts "Another card is handed to the dealer"
       hand_card_to_player(dealer_hand, game_deck)
       sleep 1
@@ -167,13 +162,13 @@ begin
   end
 
   # If the dealer total is > 17 and he has a larger total than the user, the dealer wins.
-  if (@game_still_on) && (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total))
+  if @game_still_on && dealer_winning?(user_hand, user_total, dealer_hand, dealer_total)
     say "The dealer beat you."
     @game_still_on = false 
   end
 
   # If the dealer total is > 17 and he has a lower total than the user, he will continue until either he wins or busts.
-  if (@game_still_on) && (!dealer_winning?(user_hand, user_total, dealer_hand, dealer_total))
+  if @game_still_on && !dealer_winning?(user_hand, user_total, dealer_hand, dealer_total)
   
     say "Things are getting serious."
     sleep 0.25
@@ -192,9 +187,9 @@ begin
         puts "You win the hand!"
       end
 
-    end until !@game_still_on || (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total))
+    end until !@game_still_on || dealer_winning?(user_hand, user_total, dealer_hand, dealer_total)
 
-  if (dealer_winning?(user_hand, user_total, dealer_hand, dealer_total)) && @game_still_on 
+  if dealer_winning?(user_hand, user_total, dealer_hand, dealer_total) && @game_still_on 
     puts "The dealer won the hand."
     @game_still_on = false
   end
